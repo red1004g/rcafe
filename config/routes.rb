@@ -1,12 +1,14 @@
 Rails.application.routes.draw do
-  # resources :bulletins
-  # resources :posts
-  resources :bulletins do
-    resources :posts
-  end
 
   root 'welcome#index'
 
+  resources :posts do
+      resources :comments, only: [:create, :destroy]
+    end
+
+  resources :bulletins do
+    resources :posts
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

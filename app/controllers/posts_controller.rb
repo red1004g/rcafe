@@ -6,7 +6,15 @@ class PostsController < ApplicationController
   # GET /posts
   # GET /posts.json
   def index
-    @posts = @bulletin.posts.all
+    if @bulletin
+      @posts = @bulletin.posts.all
+    else
+      if params[:tag]
+        @posts = Post.tagged_with(params[:tag])
+      else
+        @posts = Post.all
+      end
+    end
   end
 
   # GET /posts/1
@@ -67,15 +75,19 @@ class PostsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
 
     def set_bulletin
-      @bulletin = Bulletin.find(params[:bulletin_id])
+      @bulletin = Bulletin.find(params[:bulletin_id]) if params[:bulletin_id]
     end
 
     def set_post
-      @post = Post.find(params[:id])
+      if params[:bulletin_id]
+        @post = @bulletin.posts.find(params[:id])
+      else
+        @post = Post.find(params[:id])
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def post_params
-      params.require(:post).permit(:title, :content, :picture, :picture_cache)
+      params.require(:post).permit(:title, :content, :picture, :picture_cache, :tag_list_fixed)
     end
 end
